@@ -1,26 +1,32 @@
 AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
-Description: Serverless video thumbnail builder 
+Description: Serverless video thumbnail builder
 
 Parameters:
   LambdaLayerArn:
     Type: String
-    Default: 'arn:aws:lambda:us-east-1:145266761615:layer:ffmpeg:4'
+    Default: 'arn:aws:lambda:us-east-1:277790246569:layer:ffmpeg:1'
   ConversionFileType:
     Type: String
     Default: png
   ConversionMimeType:
     Type: String
-    Default: image/png 
+    Default: image/png
   ThumbnailWidth:
     Type: Number
     Default: 500
+
 Resources:
+
   UploadBucket:
     Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Join ["-", ['uploads', Ref: 'AWS::StackName']]
 
   ResultsBucket:
     Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Join ["-", ['results', Ref: 'AWS::StackName']]
 
   ConvertFileFunction:
     Type: AWS::Serverless::Function
@@ -33,11 +39,13 @@ Resources:
       Layers:
         - !Ref LambdaLayerArn
       Policies:
-      - S3CrudPolicy:
-          BucketName: !Sub "${AWS::StackName}-*"
+        - S3CrudPolicy:
+            BucketName: !Join ["-", ['uploads', Ref: 'AWS::StackName']]
+        - S3CrudPolicy:
+            BucketName: !Join ["-", ['results', Ref: 'AWS::StackName']]
       Environment:
         Variables:
-          OUTPUT_BUCKET: !Ref ResultsBucket
+          OUTPUT_BUCKET: !Join ["-", ['results', Ref: 'AWS::StackName']]
           EXTENSION: !Sub '.${ConversionFileType}'
           MIME_TYPE: !Ref ConversionMimeType
           THUMB_WIDTH: !Ref ThumbnailWidth
@@ -49,10 +57,12 @@ Resources:
             Events: s3:ObjectCreated:*
 
 Outputs:
-    UploadBucket:
-      Description: "Upload S3 bucket"
-      Value: !Ref UploadBucket
-    ResultsBucket:
-      Description: "Results S3 bucket"
-      Value: !Ref ResultsBucket
+
+  UploadBucket:
+    Description: "Upload S3 bucket"
+    Value: !Ref UploadBucket
+
+  ResultsBucket:
+    Description: "Results S3 bucket"
+    Value: !Ref ResultsBucket
 
