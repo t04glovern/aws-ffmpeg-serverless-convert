@@ -31,3 +31,8 @@ make deploy
 ```bash
 aws s3 cp assets/demo.mp4 s3://uploads-ffmpeg-video-converter/demo.mp4
 ```
+
+## Attribution
+
+- [Serverless video thumbnail builder](https://github.com/serverlesspub/s3-lambda-ffmpeg-thumbnail-builder)
+- [FFmpeg/FFprobe AWS Lambda layer](https://github.com/serverlesspub/ffmpeg-aws-lambda-layer)
