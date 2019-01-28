@@ -5,7 +5,7 @@ Description: Serverless video watermaker'er'
 Parameters:
   LambdaLayerArn:
     Type: String
-    Default: 'arn:aws:lambda:us-east-1:277790246569:layer:ffmpeg:1'
+    Default: 'arn:aws:lambda:us-east-1:XXXXXXXXXXXX:layer:ffmpeg:1'
   ConversionFileType:
     Type: String
     Default: mp4
