@@ -1,4 +1,4 @@
-# Udemy Video Converter - FFMPEG Lambda Layer
+# FFMPEG Lambda Layer - Video Converter
 
 Deploy the base image to an S3 bucket you have available
 
