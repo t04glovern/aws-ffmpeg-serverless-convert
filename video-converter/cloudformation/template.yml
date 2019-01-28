@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
-Description: Serverless video thumbnail builder
+Description: Serverless video watermaker'er'
 
 Parameters:
   LambdaLayerArn:
@@ -8,13 +8,16 @@ Parameters:
     Default: 'arn:aws:lambda:us-east-1:277790246569:layer:ffmpeg:1'
   ConversionFileType:
     Type: String
-    Default: png
+    Default: mp4
   ConversionMimeType:
     Type: String
-    Default: image/png
-  ThumbnailWidth:
-    Type: Number
-    Default: 500
+    Default: video/mp4v-es
+  S3ResourceBucket:
+    Type: String
+    Default: 'devopstar'
+  S3ResourceKeyIcon:
+    Type: String
+    Default: 'resources/aws-ffmpeg-serverless-convert/base/icon.png'
 
 Resources:
 
@@ -32,23 +35,26 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.handler
-      Timeout: 180
+      Timeout: 900
       MemorySize: 1024
       Runtime: nodejs8.10
       CodeUri: ../src
       Layers:
         - !Ref LambdaLayerArn
       Policies:
-        - S3CrudPolicy:
+        - S3ReadPolicy:
             BucketName: !Join ["-", ['uploads', Ref: 'AWS::StackName']]
         - S3CrudPolicy:
             BucketName: !Join ["-", ['results', Ref: 'AWS::StackName']]
+        - S3ReadPolicy:
+            BucketName: !Ref S3ResourceBucket
       Environment:
         Variables:
           OUTPUT_BUCKET: !Join ["-", ['results', Ref: 'AWS::StackName']]
           EXTENSION: !Sub '.${ConversionFileType}'
           MIME_TYPE: !Ref ConversionMimeType
-          THUMB_WIDTH: !Ref ThumbnailWidth
+          RESOURCE_BUCKET: !Ref S3ResourceBucket
+          ICON_FILE: !Ref S3ResourceKeyIcon
       Events:
         FileUpload:
           Type: S3
